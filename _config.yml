@@ -1,15 +1,13 @@
 # Site settings
-name: Just for writing
+name: Just for recording
 email: caojian_1104@126.com
 author: CC-2018
-url: http://www.hifreud.com
-#resume_site: http://www.hifreud.com/Resume.io/
+url: https://cc2018.github.io/cc2018
 github: https://github.com/cc2018/cc2018
 baseurl: ""
-description: Self demanding reader
+description: 做一个自我要求的阅读者。
 meta_description: personal blog;
-motto: It's our wits that make us men.
-#banner: 学而不思则罔，思而不学则殆。
+motto: 千古兴亡多少事, 不尽长江滚滚流
 
 #permalink: /:categories/:year/:month/:day/:title/
 permalink: /:year/:month/:day/:title/

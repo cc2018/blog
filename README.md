@@ -3,7 +3,7 @@
 
 致谢
 ====================================
-+ 感谢[Solar](http://jekyllthemes.org/themes/Less-Or-More/)的原作者[Freud](http://www.hifreud.com/)，我的博客打算以此为模板
++ 感谢[Freud Kang](http://jekyllthemes.org/themes/Less-Or-More/)的原作者[Freud](http://www.hifreud.com/)，我的博客打算以此为模板
 
 
 使用
