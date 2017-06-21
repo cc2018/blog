@@ -1,1 +1,27 @@
-theme: jekyll-theme-architect
+# Site settings
+name: Just for writing
+email: caojian_1104@126.com
+author: CC-2018
+url: http://www.hifreud.com
+#resume_site: http://www.hifreud.com/Resume.io/
+github: https://github.com/cc2018/cc2018
+baseurl: ""
+description: Self demanding reader
+meta_description: personal blog;
+motto: It's our wits that make us men.
+#banner: 学而不思则罔，思而不学则殆。
+
+#permalink: /:categories/:year/:month/:day/:title/
+permalink: /:year/:month/:day/:title/
+paginate: 10
+plugins: [jekyll-paginate]
+
+exclude: ['README.md', 'Gemfile.lock', 'Gemfile', 'Rakefile']
+
+github_username: cc2018
+highlighter: Pygments
+
+# Build settings
+markdown: kramdown
+
+baidu_analysis: ff1da0dd6c6a814ef6ec49dd10246092
