@@ -5,9 +5,9 @@ author: CC-2018
 url: https://cc2018.github.io/cc2018
 github: https://github.com/cc2018/cc2018
 baseurl: ""
-description: 做一个自我要求的阅读者。
+description: Some description
 meta_description: personal blog;
-motto: 千古兴亡多少事, 不尽长江滚滚流
+motto: Some description
 
 #permalink: /:categories/:year/:month/:day/:title/
 permalink: /:year/:month/:day/:title/
