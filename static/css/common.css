@@ -123,11 +123,12 @@ html, body {
     margin: 0 -15px;
     border: none;
     border-radius: 0 0 4px 4px;
-    -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    min-height: 600px;
+}
+.docs-content blockquote {
+    font-size: 13px;
 }
 .footer {
-    display: none;
     padding: 25px 0 10px;
     color: #777;
     background: #fff;
@@ -139,7 +140,10 @@ html, body {
       width: 263px;
     }
     .docs-content {
+        margin-bottom: 20px;
         padding: 1px 60px 40px 60px;
+        -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
     .footer {
         margin-top: 60px;
