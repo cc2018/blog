@@ -1,5 +1,5 @@
 <div id="navigation">
-  <h1>目录</h1>
+  <h2>目录</h2>
   <ul class="nav sidenav">
 <!--
     {% for post in site.posts  %}
@@ -24,7 +24,7 @@
           <li><a href="#year_{{next_year}}">{{next_year}}</a>
             <ul class="nav">
               <li><a href="#month_{{next_year}}_{{next_month}}">{{next_month}}</a></li>
-        {% else %}    
+        {% else %}
           {% if this_month != next_month %}
               <li><a href="#month_{{next_year}}_{{next_month}}">{{next_month}}</a></li>
           {% endif %}

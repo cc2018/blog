@@ -22,29 +22,29 @@ tag: 教程
 
 使用自己的账号登录[https://gentie.163.com/](https://gentie.163.com/)，然后点击右上角的`后台管理`
 
-![/styles/images/yungentie/01.png]({{ '/styles/images/yungentie/01.png' | prepend: site.baseurl  }})
+![/static/images/yungentie/01.png]({{ '/static/images/yungentie/01.png' | prepend: site.baseurl  }})
 
 初始化
 ---------------------
 
 如果是第一次登录云跟帖会提示完善站点基本信息。
 
-![/styles/images/yungentie/01.png]({{ '/styles/images/yungentie/02.png' | prepend: site.baseurl  }})
+![/static/images/yungentie/01.png]({{ '/static/images/yungentie/02.png' | prepend: site.baseurl  }})
 
 完成之后点击`获取代码`，选择合适的皮肤进行设置，本博客是蓝色，固定位置。
 
-![/styles/images/yungentie/01.png]({{ '/styles/images/yungentie/03.png' | prepend: site.baseurl  }})
+![/static/images/yungentie/01.png]({{ '/static/images/yungentie/03.png' | prepend: site.baseurl  }})
 
 复制引入代码
 ---------------------
 
 点击`WEB代码`, 在右侧的`跟贴完整模块代码(Web单独版)`中复制展示框中的代码
 
-![/styles/images/yungentie/01.png]({{ '/styles/images/yungentie/04.png' | prepend: site.baseurl  }})
+![/static/images/yungentie/01.png]({{ '/static/images/yungentie/04.png' | prepend: site.baseurl  }})
 
 修改模板代码
 ---------------------
 
 修改`_includes/LessOrMore/comments-providers/yungentie`文件中的内容，将文件中的代码全部删除，并粘贴刚刚从云跟帖网站复制的代码。
 
-![/styles/images/yungentie/01.png]({{ '/styles/images/yungentie/05.png' | prepend: site.baseurl  }})
+![/static/images/yungentie/01.png]({{ '/static/images/yungentie/05.png' | prepend: site.baseurl  }})
