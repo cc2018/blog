@@ -13,7 +13,7 @@
 ------------------------------------
 
 ``` bash
-jekyll server --drafts
+jekyll server
 ```
 
 效果
