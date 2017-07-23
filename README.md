@@ -8,6 +8,11 @@
 jekyll server
 ```
 
+或者
+
+``` bash
+jekyll serve --drafts
+```
 
 效果
 ------------------------------------
