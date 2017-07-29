@@ -17,7 +17,7 @@ plugins: [jekyll-paginate]
 exclude: ['README.md', 'Gemfile.lock', 'Gemfile', 'Rakefile']
 
 github_username: cc2018
-highlighter: rouge
+# highlighter: rouge
 
 # Build settings
 markdown: kramdown
