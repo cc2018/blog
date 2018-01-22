@@ -4,7 +4,7 @@ layout: post
 title: spring boot: 相关基础知识
 date: 2017-10-13 10:18:01 +0800
 categories: java
-tag: java spring
+tag: java
 ---
 
 * content
