@@ -1,10 +1,10 @@
 ---
 author: CC-2018
 layout: post
-title: "spring boot：相关基础知识"
+title: spring boot: 相关基础知识
 date: 2017-10-13 10:18:01 +0800
-categories: reading
-tag: 总结
+categories: java
+tag: java spring
 ---
 
 * content
