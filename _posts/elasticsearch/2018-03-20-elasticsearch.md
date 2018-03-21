@@ -10,7 +10,7 @@ tag: elasticsearch
 * content
 {:toc}
 
-Elasticsearch 是一个实时的分布式搜索分析引擎，它允许你以近实时的方式快速存储、搜索和分析大量的数据。它通常被用作基础的技术来赋予应用程序复杂的搜索特性和需求。
+Elasticsearch 是一个实时的分布式搜索分析引擎，以近实时的方式快速存储、搜索和分析大数据。它通常被用作一项基础的技术，来应对复杂程序的搜索特性或需求。
 
 ### 基础概念
 
@@ -113,3 +113,87 @@ PUT /new_index
 每个Elasticsearch分片是一个Lucene索引。在一个Lucene索引中有一个文档数量的最大值。截至LUCENE-5843，这个限制是2,147,483,519 (= Integer.MAX_VALUE - 128)个文档。可以使用_cat/shards API监控分片大小。
 
 ### 安装
+
+最新版的Elasticsearch为6.2.3版本，要求jdk 8以上，推荐jdk 1.8.0_131。
+
+linux下Elasticsearch的安装比较简单：
+
+```
+# 下载
+curl -L -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.2.3.tar.gz
+# 解压
+tar -xvf elasticsearch-6.2.3.tar.gz
+# 切换到bin目录：
+cd elasticsearch-6.2.3/bin
+# 启动
+./elasticsearch
+# 或者加参数启动
+./elasticsearch -Ecluster.name=my_cluster_name -Enode.name=my_node_name
+```
+
+**重要配置**
+
+在 config/elasticsearch.yml 中有以下重要配置需要修改
+
+```
+cluster.name：集群名称，决定加入到那个es集群
+node.name：节点名称，为一标识集群内的各节点
+
+# 路径，elasticsearch升级时可能会覆盖安装目录下的 data，logs，plugins等，最好是指定到其他路径
+# 数据可以保存到多个不同的目录， 如果将每个目录分别挂载不同的硬盘，这可是一个简单且高效实现一个软磁盘阵列（ RAID 0 ）的办法。
+# 但一个分片只会放到一个路径下
+path.data: 可指定多个其他路径/path/to/data1,/path/to/data2
+path.logs：log路径
+path.conf: 配置文件路径
+path.plugins: 安装插件路径
+
+http.port: 8800 更改REST API 端口
+transport.tcp.port: 9400 集群内部 tcp 通信端口
+transport.tcp.compress: true 对TCP通信数据进行压缩
+
+# 没有足够 master 候选节点的时候，就不要选举 master
+# master 候选节点个数 / 2) + 1
+discovery.zen.minimum_master_nodes：2
+node.master：决定此节点是否可做
+node.data：决定此节点是否可做数据节点存储数据
+
+# 使用单播代替组播，以防止节点无意中加入集群
+discovery.zen.ping.multicast.enabled:false 禁用组播自动发现
+# 配置尝试连接的节点代表，当联系到单播列表中的成员时，它就会得到整个集群所有节点的状态，然后它会联系 master 节点，并加入集群。
+discovery.zen.ping.unicast.hosts:["host1", "host2:port"]
+
+# 集群恢复
+# 禁止 Elasticsearch 在存在至少 8 个节点（数据节点或者 master 节点）之前进行数据恢复
+gateway.recover_after_nodes: 8
+gateway.expected_nodes: 10
+gateway.recover_after_time: 5m
+
+# 锁定内存，保证jvm不swap
+bootstrap.mlockall：true
+bootstrap.memory_lock：true
+
+# 创建索引时的默认分片数，也可以通过REST API 创建索引时再指定 settings
+index.number_of_shards: 1
+index.number_of_replicas: 1
+```
+
+以上集群配置都可以通过 REST API 去动态修改配置，如：
+
+```
+PUT /_cluster/settings
+{
+    "persistent" : {
+        "discovery.zen.minimum_master_nodes" : 2
+    }
+}
+```
+
+
+这样就启动了一个单节点的Elasticsearch集群，可以通过 REST API 完成以下功能：
+
+```
+检查集群，节点和索引的健康状况，状态和统计数据
+管理集群，节点和索引的数据和原数据
+执行CRUD(增删改查)操作，依靠索引进行搜索
+执行高级搜索操作，比如分页，排序，过滤，脚本化，聚集等等
+```
