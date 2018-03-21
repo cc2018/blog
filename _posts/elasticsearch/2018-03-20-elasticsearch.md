@@ -151,11 +151,11 @@ http.port: 8800 更改REST API 端口
 transport.tcp.port: 9400 集群内部 tcp 通信端口
 transport.tcp.compress: true 对TCP通信数据进行压缩
 
-# 没有足够 master 候选节点的时候，就不要选举 master
-# master 候选节点个数 / 2) + 1
-discovery.zen.minimum_master_nodes：2
-node.master：决定此节点是否可做
-node.data：决定此节点是否可做数据节点存储数据
+# 遇到网络故障的群集有可能将群集分成两个独立的群集（两个master脑裂）
+# 设置没有足够 master 候选节点的时候，就不要选举 master
+discovery.zen.minimum_master_nodes：(master 候选节点个数 / 2) + 1
+node.master：决定此节点是否可做，默认为true
+node.data：决定此节点是否可做数据节点存储数据，默认为true
 
 # 使用单播代替组播，以防止节点无意中加入集群
 discovery.zen.ping.multicast.enabled:false 禁用组播自动发现
@@ -177,7 +177,7 @@ index.number_of_shards: 1
 index.number_of_replicas: 1
 ```
 
-以上集群配置都可以通过 REST API 去动态修改配置，如：
+以上配置可以通过 REST API 去动态修改配置，如：
 
 ```
 PUT /_cluster/settings
@@ -187,7 +187,6 @@ PUT /_cluster/settings
     }
 }
 ```
-
 
 这样就启动了一个单节点的Elasticsearch集群，可以通过 REST API 完成以下功能：
 
