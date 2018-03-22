@@ -121,3 +121,165 @@ yellow cars               5 1       0 0      1249      1249
 yellow wavelet2           5 1       0 0       615       615
 
 ```
+
+### Cluster APIs
+
+#### 集群状态
+
+**集群健康**
+
+集群有3种健康状态
+
+```
+green：所有的主分片和副本分片都已分配。你的集群是 100% 可用的。
+yellow：所有的主分片已经分片了，但至少还有一个副本是缺失的。
+red：至少一个主分片（以及它的全部副本）都在缺失中。
+```
+
+而当集群状态有问题时，可以参考此文档排查，[集群状态](https://www.elastic.co/guide/cn/elasticsearch/guide/current/_cluster_health.html)
+
+```
+# 获取集群健康状态，提供参数：level、wait_for_status、wait_for_nodes、wait_for_no_relocating_shards
+# wait_for_no_initializing_shards、wait_for_active_shards、local、timeout 等
+GET _cluster/health
+# 从索引层面上查看集群状态
+GET _cluster/health?level=indices
+# 打印出分片的状态
+GET /_cluster/health?level=shards
+# 获取具体索引的健康状态
+GET /_cluster/health/test1,test2
+# 同步等待状态变成 yellow
+GET /_cluster/health?wait_for_status=yellow&timeout=50s
+```
+
+**集群状态**
+
+cluster state API 可以获取更全面的集群状态信息。`GET /_cluster/state` 它会返回集群名称，节点，metadata，索引信息等。
+
+可以对结果加参数过滤。过滤格式为：`GET /_cluster/state/{metrics}/{indices}`，metrics 有如下value：
+
+```
+version：集群状态版本
+master_node：选举的 master 节点
+nodes：节点信息
+routing_table：路由
+metadata：元数据
+blocks：blocks
+
+GET /_cluster/state/metadata,routing_table/foo,bar
+GET /_cluster/state/_all/foo,bar
+GET /_cluster/state/blocks
+```
+另外还有一些常见的 Cluster APIs
+```
+# 更新集群设置信息，persistent：集群重启后也可以生效，transient：短暂生效，集群重启失效
+PUT /_cluster/settings
+{
+    "persistent" : {
+        "indices.recovery.max_bytes_per_sec" : "50mb"
+    }
+}
+或
+PUT /_cluster/settings?flat_settings=true
+{
+    "transient" : {
+        "indices.recovery.max_bytes_per_sec" : "20mb"
+    }
+}
+# 获取集群数字统计信息，包括分片数、文档数、节点数等等。
+GET /_cluster/stats?human&pretty
+# 获取集群的一些还未执行的任务，如创建索引，更新mapping，分片或失败分片等，通常会返回为空
+GET /_cluster/pending_tasks
+# 分片移动，将分片从一个节点移动到另一个节点
+POST /_cluster/reroute
+{
+    "commands" : [
+        {
+            "move" : {
+                "index" : "test", "shard" : 0,
+                "from_node" : "node1", "to_node" : "node2"
+            }
+        },
+        {
+          "allocate_replica" : {
+                "index" : "test", "shard" : 1,
+                "node" : "node3"
+          }
+        }
+    ]
+}
+```
+
+#### 节点状态
+
+大部分的 cluster APIs，都可以指定node执行（比如获取一个节点的状态）
+
+```
+# Local
+GET /_nodes/_local
+# Address
+GET /_nodes/10.0.0.3,10.0.0.4
+GET /_nodes/10.0.0.*
+# Names，可以看到该节点的详细信息，包括节点配置，端口，操作系统，插件等。
+GET /_nodes/node_name_goes_here
+GET /_nodes/node_name_goes_*
+# Attributes (set something like node.attr.rack: 2 in the config)
+GET /_nodes/rack:2
+GET /_nodes/ra*:2
+GET /_nodes/ra*:2*
+```
+
+**节点信息统计**
+```
+GET /_nodes/stats
+GET /_nodes/nodeId1,nodeId2/stats
+# 只查看索引
+GET /_nodes/stats/indices
+# 只查看操作系统信息和进程信息
+GET /_nodes/stats/os,process
+# 只返回某个节点的进程信息
+GET /_nodes/10.0.0.1/stats/process
+
+GET _nodes/usage
+GET _nodes/nodeId1,nodeId2/usage
+```
+
+**管理任务API**
+
+`The Task Management API` 是比较新的功能，api也一直在修改，并不对旧接口兼容。
+
+```
+GET _tasks
+GET _tasks?nodes=nodeId1,nodeId2
+GET _tasks?nodes=nodeId1,nodeId2&actions=cluster:*
+```
+
+**热门线程**
+
+获取各个节点的线程信息
+
+```
+GET /_nodes/hot_threads
+GET /_nodes/{nodesIds}/hot_threads
+```
+
+**分配分片理由**
+
+用来解释分片没有被分配的理由，或者分配到某个节点的理由。
+
+```
+GET /_cluster/allocation/explain
+{
+  "index": "myindex",
+  "shard": 0,
+  "primary": true
+}
+或 primary 表示是不是要解释副分片
+GET /_cluster/allocation/explain
+{
+  "index": "myindex",
+  "shard": 0,
+  "primary": false,
+  "current_node": "nodeA"                         
+}
+```
