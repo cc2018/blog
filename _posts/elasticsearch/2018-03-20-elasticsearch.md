@@ -112,6 +112,86 @@ PUT /new_index
 
 每个Elasticsearch分片是一个Lucene索引。在一个Lucene索引中有一个文档数量的最大值。截至LUCENE-5843，这个限制是2,147,483,519 (= Integer.MAX_VALUE - 128)个文档。可以使用_cat/shards API监控分片大小。
 
+**映射(Mapping)**
+
+Mapping的过程，是定义文档包含的字段怎么存储，怎么被索引，比如：
+
+```
+那些 string 字段被当做全文检索字段
+那些字段是数字、日期、或地理类型
+字段格式：比如日期格式，或时间显示格式
+使用动态模板去控制新增字段的设置
+```
+
+Mapping Type
+
+Mapping Type，可以认为是一种自定义的类型，它包括 `Meta-fields` 和 `Fields or properties`
+
+```
+# doc 则为一个 mapping type
+PUT my_index
+{
+  "mappings": {
+    "doc": {
+      "_default_": {
+        "_all": {
+          "enabled": false
+        }
+      },
+      "properties": {
+        "title":    { "type": "text"  },
+        "name":     { "type": "text"  },
+        "age":      { "type": "integer" },  
+        "created":  {
+          "type":   "date",
+          "format": "strict_date_optional_time||epoch_millis"
+        }
+      }
+    }
+  }
+}
+```
+
+元数据常查询、聚合分析、使用脚本和排序等，通常有以下元数据：
+
+```
+_index：文档所属的index
+_type：文档所属的mapping type
+_id：文档的id
+_all：这个字段索引了所有其他字段的值；
+_field_names：存储着文档中所有值为非空的字段信息
+_meta：特定于应用程序的元数据。
+_parent：用于创建两个映射的父子之间的关系；
+_routing：自定义路由值，可以路由某个文档到具体的分片(shard)
+_source：文档原始数据
+_uid：由_type和_id组成
+_timestamp：存储着当前文档的时间戳信息
+```
+
+在mapping中使用default字段，那么其它字段会自动继承default中的设置。
+
+```
+PUT my_index
+{
+  "mappings": {
+    "_default_": {
+      "_all": {
+        "enabled": false
+      }
+    },
+    "user": {},
+    "blogpost": {
+      "_all": {
+        "enabled": true
+      }
+    }
+  }
+}
+```
+user 和 blogpost会继承default的设置，但blogpost 会重写_all字段。而动态模板(Dynamic templates)可以对未出现过的字段设置 mapping。
+
+[参考文档](https://www.elastic.co/guide/en/elasticsearch/reference/6.2/mapping.html)
+
 ### 安装
 
 最新版的Elasticsearch为6.2.3版本，要求jdk 8以上，推荐jdk 1.8.0_131。
