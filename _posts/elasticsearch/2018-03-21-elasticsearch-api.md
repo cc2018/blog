@@ -662,7 +662,7 @@ GET _analyze
 }
 ```
 
-#### Monitoring
+#### 监控状态
 
 获取索引状态数据
 
@@ -707,7 +707,7 @@ GET /test1,test2/_shard_stores
 GET /_shard_stores
 ```
 
-#### 状态管理
+#### 管理状态
 
 **清除缓存**
 
@@ -753,8 +753,132 @@ POST /_forcemerge
 
 ### Document APIs
 
+当文档添加或删除时，保持主分片和副本同步的过程称之为，数据复制模型(data replication model)，过程为：
+```
+确认操作正确
+确认数据正确，执行如存储或删除操作
+复制到副本，有多个副本则并行运行
+复制完成，告诉主分片，通知client
+```
+
 文档 CRUD APIs
 
 **单文档APIs**
+
+索引(Index API)
+
+对索引添加或更新一条json文档
+
+```
+# 索引为twitter，type为_doc，添加一条文档1
+PUT twitter/_doc/1
+{
+    "user" : "kimchy",
+    "post_date" : "2009-11-15T14:12:12",
+    "message" : "trying out Elasticsearch"
+}
+```
+
+索引操作为自动创建出对应的索引，如果索引还没创建的话，并且对特定的类型自动创建动态mapping。可以设置 `action.auto_create_index=false`禁止自定创建索引，`index.mapper.dynamic=false`，禁止自动创建mapping。
+
+```
+# op_type使用，如果存在这创建失败
+PUT twitter/_doc/1?op_type=create
+{
+    "user" : "kimchy",
+    "post_date" : "2009-11-15T14:12:12",
+    "message" : "trying out Elasticsearch"
+}
+或
+PUT twitter/_doc/1/_create
+{
+    "user" : "kimchy",
+    "post_date" : "2009-11-15T14:12:12",
+    "message" : "trying out Elasticsearch"
+}
+
+# 默认使用文档 id 的 hash 值作为路由，可以由参数控制
+POST twitter/_doc?routing=kimchy
+{
+    "user" : "kimchy",
+    "post_date" : "2009-11-15T14:12:12",
+    "message" : "trying out Elasticsearch"
+}
+
+# 设置api超时时间
+PUT twitter/_doc/1?timeout=5m
+{
+    "user" : "kimchy",
+    "post_date" : "2009-11-15T14:12:12",
+    "message" : "trying out Elasticsearch"
+}
+```
+
+查询(Get API)
+
+Get Api 为实时查询，如果一个文档已经更新，但是还没refresh，则 Get Api 会激发refresh，从而使文档能实时被搜索到。
+```
+# 使用文档_id查询
+GET twitter/_doc/0
+
+# source 过滤
+GET twitter/_doc/0?_source=false
+# 使用_source_include 和 _source_exclude包括source里的部分字段，排除不要返回的字段
+GET twitter/_doc/0?_source_include=*.id&_source_exclude=entities
+# 只有_source_include时
+GET twitter/_doc/0?_source=*.id,retweeted
+
+# 只返回_source 字段
+GET twitter/_doc/1/_source
+# 过滤
+GET twitter/_doc/1/_source?_source_include=*.id&_source_exclude=entities'
+# 路由
+GET twitter/_doc/2?routing=user1
+# Preference = _primary|_local|Custom (string) value 控制从那个分片获取数据，默认是主副本随机获取
+GET twitter/_doc/1?Preference=_primary
+```
+
+删除文档(Delete API)
+
+```
+# 通过 _id 删除
+DELETE /twitter/_doc/1
+# 如果索引时用了routing，删除时就也的用routing
+DELETE /twitter/_doc/1?routing=kimchy
+# 等待有多少活跃分片才开始执行
+DELETE /twitter/_doc/1?wait_for_active_shards=true
+# 设置超时
+DELETE /twitter/_doc/1?timeout=5m
+
+# 使用 query 查询删除
+# 支持 refresh, wait_for_completion, wait_for_active_shards, timeout and scroll 参数
+POST twitter/_delete_by_query
+{
+  "query": {
+    "match": {
+      "message": "some message"
+    }
+  }
+}
+
+# 获取删除的任务进度
+GET _tasks?detailed=true&actions=*/delete/byquery
+# 取消删除任务，task_id 可由_tasks 获取
+POST _tasks/task_id:1/_cancel
+
+# 使用 Sliced Scroll 可以将任务拆分成小任务并行执行
+POST twitter/_delete_by_query?refresh&slices=5
+{
+  "query": {
+    "range": {
+      "likes": {
+        "lt": 10
+      }
+    }
+  }
+}
+```
+
+更新文档(Update API)
 
 **多文档APIs**

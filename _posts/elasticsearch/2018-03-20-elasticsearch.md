@@ -1,7 +1,7 @@
 ---
 author: CC-2018
 layout: post
-title: elasticsearch
+title: Elasticsearch
 date: 2018-03-20 20:51:01 +0800
 categories: elasticsearch
 tag: elasticsearch
@@ -40,9 +40,11 @@ Elasticsearch是一个近实时的搜索平台。这意味着从索引（即存�
 
 **类型(Type)**
 
-警告！Type在6.0.0版本中已经不赞成使用
+Type 也可称之为Mapping types，有自己的field，元数据等。
 
 一个类型是索引中的一个分类或者说是一个分区，它可以让你在同一索引中存储不同类型的文档，例如，为用户建一个类型，为博客文章建另一个类型，比较类似关系数据库中的表概念。现在已不可能在同一个索引中创建多个类型，并且整个类型的概念将会在未来的版本（7.0.0）中彻底移除。
+
+警告！Type，实际上是_Type在6.0.0版本中已经不赞成使用
 
 为什么移除type：在一个Elasticsearch的索引中，有相同名称字段的不同映射类型在Lucene内部是由同一个字段支持的。换言之，看下面的这个例子，user 类型中的 user_name字段和tweet类型中的user_name字段实际上是被存储在同一个字段中，而且两个user_name字段在这两种映射类型中都有相同的定义（如类型都是 text或者都是date）。这样在索引这个字段时会导致失败。并且最重要的是，在一个索引中存储那些有很少或没有相同字段的实体会导致稀疏数据，并且干扰Lucene有效压缩文档的能力。
 
@@ -53,7 +55,7 @@ Elasticsearch是一个近实时的搜索平台。这意味着从索引（即存�
 数据更有可能是密集的，因此可以从Lucene中使用的压缩技术中获益。
 在全文搜索中的为评分使用的单词统计更有可能是准确的，因为同一个索引中的所有文档都代表一个单一的实体类型。
 
-2. 自定义类型字段：显式类型 type 字段取代隐式 _type 字段。
+2. 使用自定义type field字段：显式类型 type 字段取代隐式 _type 字段。
 PUT twitter
 {
   "mappings": {
@@ -168,27 +170,9 @@ _uid：由_type和_id组成
 _timestamp：存储着当前文档的时间戳信息
 ```
 
-在mapping中使用default字段，那么其它字段会自动继承default中的设置。
+`_default_ mapping`为创建新mapping type时的基类，在6.0.0已废弃
 
-```
-PUT my_index
-{
-  "mappings": {
-    "_default_": {
-      "_all": {
-        "enabled": false
-      }
-    },
-    "user": {},
-    "blogpost": {
-      "_all": {
-        "enabled": true
-      }
-    }
-  }
-}
-```
-user 和 blogpost会继承default的设置，但blogpost 会重写_all字段。而动态模板(Dynamic templates)可以对未出现过的字段设置 mapping。
+
 
 [参考文档](https://www.elastic.co/guide/en/elasticsearch/reference/6.2/mapping.html)
 
